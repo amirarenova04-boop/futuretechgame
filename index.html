@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>FutureTech</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: url('images/hero.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: rgba(0,0,0,0.6);
+}
+
+nav a {
+    margin: 0 10px;
+    color: white;
+    cursor: pointer;
+}
+
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: rgba(0,0,0,0.5);
+    padding: 20px;
+    border-radius: 15px;
+    width: 250px;
+    text-align: center;
+}
+
+.card img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+.auth {
+    text-align: center;
+    padding: 40px;
+    background: rgba(0,0,0,0.6);
+    margin: 20px;
+    border-radius: 15px;
+}
+
+footer {
+    background: rgba(0,0,0,0.8);
+    padding: 20px;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>FutureTech</h1>
+    <nav>
+        <a onclick="showHome()">Главная</a>
+        <a onclick="showRegister()">Регистрация</a>
+        <a onclick="showLogin()">Вход</a>
+        <a onclick="showProfile()">Профиль</a>
+        <a onclick="showGame()">Игра</a>
+    </nav>
+</header>
+
+<!-- HOME -->
+<div id="home">
+    <section class="hero">
+        <h2>Технологии будущего уже здесь 🚀</h2>
+        <p>AI, роботы, космос</p>
+    </section>
+
+    <section class="cards">
+        <div class="card">
+            <img src="images/ai.jpg">
+            <h3>AI</h3>
+            <p>Искусственный интеллект</p>
+        </div>
+
+        <div class="card">
+            <img src="images/robot.jpg">
+            <h3>Роботы</h3>
+            <p>Автоматизация труда</p>
+        </div>
+
+        <div class="card">
+            <img src="images/space.jpg">
+            <h3>Космос</h3>
+            <p>Исследование вселенной</p>
+        </div>
+    </section>
+</div>
+
+<!-- GAME -->
+<div id="game" style="display:none;">
+    <section class="auth">
+        <h2>🎮 Угадай технологию</h2>
+
+        <p id="question"></p>
+
+        <button onclick="answer('ai')">🤖 AI</button>
+        <button onclick="answer('robot')">🚗 Роботы</button>
+        <button onclick="answer('space')">🚀 Космос</button>
+
+        <p id="result"></p>
+        <p>Очки: <span id="score">0</span></p>
+
+        <button onclick="nextQuestion()">Дальше</button>
+    </section>
+</div>
+
+<!-- REGISTER -->
+<div id="register" style="display:none;">
+    <section class="auth">
+        <h2>Регистрация</h2>
+        <input id="username" placeholder="Имя"><br>
+        <input id="password" placeholder="Пароль"><br>
+        <button onclick="register()">Зарегистрироваться</button>
+        <p id="message"></p>
+    </section>
+</div>
+
+<!-- LOGIN -->
+<div id="login" style="display:none;">
+    <section class="auth">
+        <h2>Вход</h2>
+        <input id="loginUser" placeholder="Имя"><br>
+        <input id="loginPass" placeholder="Пароль"><br>
+        <button onclick="login()">Войти</button>
+        <p id="loginMessage"></p>
+    </section>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" style="display:none;">
+    <section class="auth">
+        <h2>Профиль</h2>
+        <p id="profileInfo"></p>
+    </section>
+</div>
+
+<footer>
+    <p>FutureTech © 2026</p>
+</footer>
+
+<script>
+function hideAll() {
+    document.getElementById("home").style.display = "none";
+    document.getElementById("register").style.display = "none";
+    document.getElementById("login").style.display = "none";
+    document.getElementById("profile").style.display = "none";
+    document.getElementById("game").style.display = "none";
+}
+
+function showHome() {
+    hideAll();
+    document.getElementById("home").style.display = "block";
+}
+
+function showRegister() {
+    hideAll();
+    document.getElementById("register").style.display = "block";
+}
+
+function showLogin() {
+    hideAll();
+    document.getElementById("login").style.display = "block";
+}
+
+function showProfile() {
+    hideAll();
+    document.getElementById("profile").style.display = "block";
+    let user = localStorage.getItem("user");
+    document.getElementById("profileInfo").innerText = user ? "Привет, " + user : "Вы не вошли";
+}
+
+function showGame() {
+    hideAll();
+    document.getElementById("game").style.display = "block";
+    loadQuestion();
+}
+
+function register() {
+    localStorage.setItem("user", document.getElementById("username").value);
+    localStorage.setItem("pass", document.getElementById("password").value);
+    document.getElementById("message").innerText = "Регистрация успешна!";
+}
+
+function login() {
+    let u = document.getElementById("loginUser").value;
+    let p = document.getElementById("loginPass").value;
+
+    if(u === localStorage.getItem("user") && p === localStorage.getItem("pass")) {
+        document.getElementById("loginMessage").innerText = "Вход успешен!";
+    } else {
+        document.getElementById("loginMessage").innerText = "Ошибка!";
+    }
+}
+
+// GAME
+let score = 0;
+let current = 0;
+
+const questions = [
+    {text: "Думает и обучается", correct: "ai"},
+    {text: "Работает на заводах", correct: "robot"},
+    {text: "Планеты и звезды", correct: "space"}
+];
+
+function loadQuestion() {
+    document.getElementById("question").innerText = questions[current].text;
+}
+
+function answer(a) {
+    if(a === questions[current].correct) {
+        score++;
+        document.getElementById("result").innerText = "✅";
+    } else {
+        document.getElementById("result").innerText = "❌";
+    }
+    document.getElementById("score").innerText = score;
+}
+
+function nextQuestion() {
+    current++;
+    if(current >= questions.length) {
+        current = 0;
+        score = 0;
+    }
+    loadQuestion();
+}
+</script>
+
+</body>
+</html>
